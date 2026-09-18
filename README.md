@@ -1,4 +1,4 @@
-I wanted some baseline knowledge of working with LLMs and allowing them to use customized functions in my code based on the user's query.  Here is a simple illustration of that, the current query is hardcoded for addition while using an add() function as a tool.  But this represents the potential and use case something like this has.
+I wrote this to further my knowledge when working with LLMs.  This program takes in user input via IDE terminal, then sends it to qwen3:8b model being ran inside a docker container on your system.  The output is then sent back and outputted for the user.  We used an empty array to store our messages so we could utilize the json currently stored in memory as a temporary memory for the LLM.  I could easily connect this to a DB but it would just further increase IO delay and does not align with the current scope of what I was trying to accomplish here.  
 
 ## Steps to run:
 Initialize a Virtual Environment 
