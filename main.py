@@ -5,45 +5,48 @@ from ollama import Client
 
 client = Client(host="http://localhost:11434")
 
+messages = []
+
+
+while True:
 # Remove hardcoded content here
-messages = [
-    {
-        "role": "user",
-        "content": "Use the add tool to calculate 25 + 37. You must use the tool."
-    }
-]
+    user_query = input("Enter your request: ")
+    
+    messages.append(
+        {
+            "role": "user",
+            "content": user_query
+        }
+    )
+    while True:
 
-response = client.chat(
-    model="qwen3:8b",
-    messages=messages,
-    tools=[add]
-)
+        response = client.chat(
+            model="qwen3:8b",
+            messages=messages,
+            tools=[add,subtract,multiply,divide]
+        )
+        messages.append(response.message)
 
-for tool_call in response.message.tool_calls:
-    tool_name = tool_call.function.name
-    arguments = tool_call.function.arguments
+        if not response.message.tool_calls:
+            print("\nFinal Answer:")
+            print(response.message.content)
+            break
 
-    tool = TOOLS[tool_name]
+        for tool_call in response.message.tool_calls:
+            tool_name = tool_call.function.name
+            arguments = tool_call.function.arguments
 
-    result = tool(**arguments)
+            tool = TOOLS[tool_name]
 
-    print("Tool requested:", tool_name)
-    print("Arguments:", arguments)
-    print("Result:",result)
+            result = tool(**arguments)
 
-    messages.append(response.message)
-    messages.append({
-        "role":"tool",
-        "tool_name":tool_name,
-        "content":str(result)
-    })
+            print("Tool requested:", tool_name)
+            print("Arguments:", arguments)
+            print("Result:",result)
 
-
-final_response = client.chat(
-    model="qwen3:8b",
-    messages=messages,
-    tools=[add]
-)
-
-print("\nFinal Answer:")
-print(final_response.message.content)
+            messages.append(response.message)
+            messages.append({
+                "role":"tool",
+                "tool_name":tool_name,
+                "content":str(result)
+            })
